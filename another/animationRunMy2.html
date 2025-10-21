@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Running Animation</title>
+</head>
+<body>
+    <button id="Btn">Start</button>
+    <style>
+        body{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: transparent;  }
+
+        #Btn{
+        margin-right: 500px;
+    }
+
+    .runningMan {
+    position: absolute; /* Все картинки в одном месте */
+    width: auto;
+    height: 200px;
+    display: none;}
+
+    .show {
+    display: block;}
+
+    </style>
+    <img src="./images.ano/image(7).png" alt="" class="runningMan show">
+    <img src="./images.ano/image(8).png" alt="" class="runningMan">
+    <img src="./images.ano/image(9).png" alt="" class="runningMan">
+    <img src="./images.ano/image(10).png" alt="" class="runningMan">
+    <img src="./images.ano/image(11).png" alt="" class="runningMan">
+    <img src="./images.ano/image(12).png" alt="" class="runningMan">
+    <img src="./images.ano/image(13).png" alt="" class="runningMan">
+    <img src="./images.ano/image(14).png" alt="" class="runningMan">
+    <img src="./images.ano/image(15).png" alt="" class="runningMan">
+    <img src="./images.ano/image(16).png" alt="" class="runningMan">
+    <img src="./images.ano/image(17).png" alt="" class="runningMan">
+    <img src="./images.ano/image(18).png" alt="" class="runningMan">
+
+    <script>
+        const x = document.querySelectorAll(".runningMan");
+        let y = 0;
+        let z;
+
+        function X2(){
+            x[y].classList.remove("show")
+            y=(y+1)%x.length
+            x[y].classList.add("show")
+        }
+        const Btn = document.getElementById("Btn")
+        Btn.addEventListener("click",function(){
+            if(!z)
+            z=setInterval(X2, 100)
+        })
+
+
+    </script>
+</body>
+</html>

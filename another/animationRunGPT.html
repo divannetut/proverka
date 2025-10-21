@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Running ani by GPT</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: white;
+      overflow: hidden;
+    }
+    .container {
+      position: relative;
+      width: 200px;
+      height: 200px;
+    }
+    .runningMan {
+      position: absolute;
+      width: auto;
+      height: 200px;
+      display: none;
+    }
+    .show {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <img src="./images.ano/image(7).png" class="runningMan show" alt="">
+    <img src="./images.ano/image(8).png" class="runningMan" alt="">
+    <img src="./images.ano/image(9).png" class="runningMan" alt="">
+    <img src="./images.ano/image(10).png" class="runningMan" alt="">
+    <img src="./images.ano/image(11).png" class="runningMan" alt="">
+    <img src="./images.ano/image(12).png" class="runningMan" alt="">
+    <img src="./images.ano/image(13).png" class="runningMan" alt="">
+    <img src="./images.ano/image(14).png" class="runningMan" alt="">
+    <img src="./images.ano/image(15).png" class="runningMan" alt="">
+    <img src="./images.ano/image(16).png" class="runningMan" alt="">
+    <img src="./images.ano/image(17).png" class="runningMan" alt="">
+    <img src="./images.ano/image(18).png" class="runningMan" alt="">
+  </div>
+
+  <script>
+    // ждём пока страница полностью загрузится
+    window.addEventListener("load", function() {
+      const frames = document.querySelectorAll(".runningMan");
+      let current = 0;
+
+      function nextFrame() {
+        frames[current].classList.remove("show");
+        current = (current + 1) % frames.length;
+        frames[current].classList.add("show");
+      }
+
+      // меняем кадры каждые 100 миллисекунд
+      setInterval(nextFrame, 100);
+    });
+  </script>
+</body>
+</html>

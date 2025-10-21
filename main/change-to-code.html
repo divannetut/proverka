@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Перевод планет в астрокод</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f7f7f7;
+    }
+
+    textarea {
+      width: 100%;
+      height: 220px;
+      margin-bottom: 10px;
+      padding: 5px;
+      font-size: 14px;
+      box-sizing: border-box;
+      overflow-y: auto;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+
+    pre {
+      background: #eee;
+      padding: 10px;
+      white-space: pre-wrap;
+    }
+
+    label {
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+<h2>Вставьте планеты:</h2>
+<textarea id="inputData" placeholder="Солнце&#10;Лев&#10;24°11’&#10;1&#10;..."></textarea>
+<br>
+<label><input type="checkbox" id="invertNode"> Поменять восходящий узел на нисходящий</label>
+<br><br>
+<button onclick="convertPlanets()">Перевести</button>
+<button onclick="copyText()">Скопировать текст</button>
+
+<h2>Результат:</h2>
+<pre id="output"></pre>
+
+<script>
+  // Копирование текста
+  function copyText() {
+    const text = document.getElementById('output').textContent;
+    if (text) {
+      navigator.clipboard.writeText(text)
+        .then(() => alert('Текст скопирован!'))
+        .catch(err => alert('Ошибка при копировании: ' + err));
+    }
+  }
+
+  // Словари планет и знаков
+  const planetsSymbols = {
+    "Солнце": "☉",
+    "Луна": "☽",
+    "Мерк": "☿",
+    "Венера": "♀",
+    "Марс": "♂",
+    "Юпитер": "♃",
+    "Сатурн": "♄",
+    "Уран": "♅",
+    "Нептун": "♆",
+    "Плутон": "♇",
+    "Узел": "☊",
+    "Лилит": "⚸",
+    "Фортуна": "⛢",
+    "Хирон": "⚷"
+  };
+
+  const signsNumbers = {
+    "Овен": 0,
+    "Телец": 1,
+    "Близнецы": 2,
+    "Рак": 3,
+    "Лев": 4,
+    "Дева": 5,
+    "Весы": 6,
+    "Скорпион": 7,
+    "Стрелец": 8,
+    "Козерог": 9,
+    "Водолей": 10,
+    "Рыбы": 11
+  };
+
+  // Перевод градусов в десятичную систему
+  function degToDecimal(degStr) {
+    const match = degStr.match(/(\d+)[°]?(\d+)?[’]?/);
+    if (!match) return NaN;
+    const deg = parseInt(match[1]);
+    const min = match[2] ? parseInt(match[2]) : 0;
+    return +(deg + min / 60).toFixed(2);
+  }
+
+  // Конвертация планет
+  function convertPlanets() {
+    const data = document.getElementById('inputData').value;
+    const lines = data.trim().split('\n').map(l => l.trim()).filter(l => l !== '');
+    const Name = [];
+    let i = 0;
+
+    while (i < lines.length) {
+      const planet = lines[i];
+      const sign = lines[i + 1];
+      const deg = lines[i + 2];
+      const house = lines[i + 3];
+
+      if (!(planet in planetsSymbols) || !(sign in signsNumbers)) {
+        i++;
+        continue;
+      }
+
+      let houseNum = parseInt(house);
+      let retrograde = null;
+
+      // Проверяем, есть ли "R" после дома
+      if (i + 4 < lines.length && lines[i + 4].toUpperCase() === 'R') {
+        retrograde = 'R';
+        i += 5;
+      } else {
+        i += 4;
+      }
+
+      // Символ и знак
+      let symbol = planetsSymbols[planet];
+      let signNum = signsNumbers[sign];
+      let degDecimal = degToDecimal(deg);
+
+      // Если узел и включена галочка, инвертируем на 180°
+      if (planet === "Узел" && document.getElementById('invertNode').checked) {
+        signNum = (signNum + 6) % 12; // противоположный знак
+        symbol = '☋'; // нисходящий узел
+      }
+
+      if (retrograde) {
+        Name.push([symbol, signNum, deg, degDecimal, houseNum, retrograde]);
+      } else {
+        Name.push([symbol, signNum, deg, degDecimal, houseNum]);
+      }
+    }
+
+    // Красивый вывод
+    let outputStr = 'Name = [\n';
+    Name.forEach(p => {
+      outputStr += '  [' + p.map(e => (typeof e === 'string' ? `'${e}'` : e)).join(', ') + '],\n';
+    });
+    outputStr = outputStr.slice(0, -2) + '\n];';
+    document.getElementById('output').textContent = outputStr;
+  }
+</script>
+
+</body>
+</html>

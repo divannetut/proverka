@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Натальные карты и стихии</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #fafafa;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 30px;
+    }
+    h2, h3 { margin: 5px 0; }
+    .person-block {
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      background: #fff;
+      padding: 15px;
+      width: 900px;
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+    }
+    .info, .house-info {
+      flex: 1;
+    }
+    .element, .house-element {
+      font-weight: bold;
+      margin: 5px 0 2px;
+    }
+    ul { margin: 0 0 10px; padding-left: 20px; }
+
+    svg {
+      flex: 1;
+      width: auto;
+      height: 440px;
+    }
+    .planet-label {
+      font-size: 10px;
+      text-anchor: middle;
+      dominant-baseline: middle;
+    }
+    .zodiac-label {
+      font-size: 12px;
+      text-anchor: middle;
+      dominant-baseline: middle;
+      fill: black;
+    }
+    .house-table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-top: 5px;
+}
+.house-table th, .house-table td {
+  border: 1px solid #ccc;
+  padding: 4px 6px;
+  text-align: left;
+  font-size: 12px;
+}
+.house-table th {
+  background-color: #f0f0f0;
+}
+.fire { background-color: #ffcccc; }      /* Огонь */
+.earth { background-color: #d2b48c; }     /* Земля */
+.air { background-color: #cceeff; }       /* Воздух */
+.water { background-color: #add8e6; }     /* Вода */
+
+.summary-row { font-weight: bold; background-color: #f0f0f0; }
+
+  </style>
+
+
+</head>
+<body>
+  <h2>Натальные карты и стихии</h2>
+  <div id="results"></div>
+
+<script>
+const SVG_NS = "http://www.w3.org/2000/svg";
+
+const zodiacNames = ["\u2648","\u2649","\u264A","\u264B","\u264C","\u264D","\u264E","\u264F","\u2650","\u2651","\u2652","\u2653"];
+const zodiacElements = {
+  1: "Огонь", 2: "Земля", 3: "Воздух", 4: "Вода",
+  5: "Огонь", 6: "Земля", 7: "Воздух", 8: "Вода",
+  9: "Огонь", 10: "Земля", 11: "Воздух", 12: "Вода"
+};
+const houseElements = {
+  1: "Огонь", 2: "Земля", 3: "Воздух", 4: "Вода",
+  5: "Огонь", 6: "Земля", 7: "Воздух", 8: "Вода",
+  9: "Огонь", 10: "Земля", 11: "Воздух", 12: "Вода"
+};
+
+const people = {
+  "Sofia": [
+    ['☉', 5, 24.1939, 1], ['☽', 10, 15.1408, 5], ['☿', 5, 8.795, 12], ['♀', 6, 29.8444, 3],
+    ['♂', 2, 10.6378, 10], ['♃', 7, 15.8164, 3], ['♄', 5, 4.0261, 12], ['♅', 12, 9.3778, 8],
+    ['♆', 11, 15.9778, 6], ['♇', 9, 21.895, 5], ['⚷', 10, 29.3217, 6], ['⚸', 5, 12.3217, 12],
+    ['○', 6, 21.85, 9], ['☊', 1, 14.9083, 9]
+  ]
+};
+
+function toDegrees(sign, deg) {
+  return (sign-1) * 30 + deg;
+}
+
+function createSVG(person) {
+  const size = 300, cx = size/2, cy = size/2, r1 = 100, r2 = 120;
+  const svg = document.createElementNS(SVG_NS, "svg");
+  svg.setAttribute("viewBox", `0 0 ${size} ${size}`);
+
+  // Круги
+  [r1, r2].forEach(r => {
+    const circle = document.createElementNS(SVG_NS, "circle");
+    circle.setAttribute("cx", cx);
+    circle.setAttribute("cy", cy);
+    circle.setAttribute("r", r);
+    circle.setAttribute("fill", "none");
+    circle.setAttribute("stroke", "#ccc");
+    svg.appendChild(circle);
+  });
+
+  // Линии делений и знаки
+  for (let i = 0; i < 12; i++) {
+    const angle = (i*30 - 90) * Math.PI/180;
+    const x1 = cx + r1*Math.cos(angle);
+    const y1 = cy + r1*Math.sin(angle);
+    const x2 = cx + r2*Math.cos(angle);
+    const y2 = cy + r2*Math.sin(angle);
+
+    const line = document.createElementNS(SVG_NS, "line");
+    line.setAttribute("x1", x1);
+    line.setAttribute("y1", y1);
+    line.setAttribute("x2", x2);
+    line.setAttribute("y2", y2);
+    line.setAttribute("stroke", "black");
+    svg.appendChild(line);
+
+    const labelAngle = ((i*30+15)-90)*Math.PI/180;
+    const lx = cx + (r2+15)*Math.cos(labelAngle);
+    const ly = cy + (r2+15)*Math.sin(labelAngle);
+    const text = document.createElementNS(SVG_NS, "text");
+    text.setAttribute("x", lx);
+    text.setAttribute("y", ly);
+    text.setAttribute("class", "zodiac-label");
+    text.textContent = zodiacNames[i];
+    svg.appendChild(text);
+  }
+
+  // Планеты
+  people[person].forEach(([name, sign, deg]) => {
+    const d = toDegrees(sign, deg);
+    const rad = (d-90)*Math.PI/180;
+    const x = cx + r1 * Math.cos(rad); // changed from r1 * 1.5
+    const y = cy + r1 * Math.sin(rad); // changed from r1 * 1.5
+
+    const circle = document.createElementNS(SVG_NS, "circle");
+    circle.setAttribute("cx", x);
+    circle.setAttribute("cy", y);
+    circle.setAttribute("r", 3);
+    circle.setAttribute("fill", "red");
+    svg.appendChild(circle);
+
+    const text = document.createElementNS(SVG_NS, "text");
+    text.setAttribute("x", x);
+    text.setAttribute("y", y-10);
+    text.setAttribute("class", "planet-label");
+    text.textContent = name;
+    svg.appendChild(text);
+  });
+
+  return svg;
+}
+
+function renderResults() {
+  const container = document.getElementById("results");
+  container.innerHTML = "";
+
+  for (const person in people) {
+    const block = document.createElement("div");
+    block.className = "person-block";
+
+    // Таблица планет и стихии
+    const tableDiv = document.createElement("div");
+    tableDiv.className = "house-info";
+    tableDiv.innerHTML = `<h3>Планеты и стихии</h3>`;
+
+    const table = document.createElement("table");
+    table.className = "house-table";
+
+    const header = document.createElement("tr");
+    ["Планета", "Стихия знака", "Стихия дома"].forEach(text => {
+      const th = document.createElement("th");
+      th.textContent = text;
+      header.appendChild(th);
+    });
+    table.appendChild(header);
+
+    const counts = { "Огонь":0, "Земля":0, "Воздух":0, "Вода":0 };
+
+    people[person].forEach(([name, sign, deg, house]) => {
+      const signElem = zodiacElements[sign];
+      const houseElem = houseElements[house];
+      counts[signElem]++;
+
+      const tr = document.createElement("tr");
+
+      const tdName = document.createElement("td"); tdName.textContent = name; tr.appendChild(tdName);
+
+      const tdSign = document.createElement("td"); tdSign.textContent = signElem; tdSign.className = signElem.toLowerCase(); tr.appendChild(tdSign);
+
+      const tdHouse = document.createElement("td"); tdHouse.textContent = houseElem; tdHouse.className = houseElem.toLowerCase(); tr.appendChild(tdHouse);
+
+      table.appendChild(tr);
+    });
+
+    // Итоги
+    const summaryRow = document.createElement("tr"); summaryRow.className = "summary-row";
+    const tdSumLabel = document.createElement("td"); tdSumLabel.textContent = "Итого:"; summaryRow.appendChild(tdSumLabel);
+    //огонь
+    const tdFire = document.createElement("td"); tdFire.textContent = `Огонь: ${counts["Огонь"]}`; summaryRow.appendChild(tdFire);
+    const tdFire2 = document.createElement("td"); tdFire2.textContent = `Огонь: ${counts["Огонь"]}`; summaryRow.appendChild(tdFire2);
+    table.appendChild(summaryRow);
+    
+    //земля
+    const summaryRow2 = document.createElement("tr"); summaryRow2.className = "summary-row";
+    summaryRow2.appendChild(document.createElement("td"));
+    const tdEarth = document.createElement("td"); tdEarth.textContent = `Земля: ${counts["Земля"]}`; summaryRow2.appendChild(tdEarth);
+    const tdEarth3 = document.createElement("td"); tdEarth3.textContent = `Земля: ${counts["Земля"]}`; summaryRow2.appendChild(tdEarth3);
+    
+    table.appendChild(summaryRow2);
+
+    //воздух
+    const summaryRow3 = document.createElement("tr"); summaryRow3.className = "summary-row";
+    summaryRow3.appendChild(document.createElement("td"));
+    
+    const tdAir = document.createElement("td"); tdAir.textContent = `Воздух: ${counts["Воздух"]}`; summaryRow3.appendChild(tdAir);
+    const tdAir2 = document.createElement("td"); tdAir2.textContent = `Воздух: ${counts["Воздух"]}`; summaryRow3.appendChild(tdAir2);
+    table.appendChild(summaryRow3);
+    
+    //вода
+     const summaryRow4 = document.createElement("tr"); summaryRow4.className = "summary-row";
+    summaryRow4.appendChild(document.createElement("td"));
+    
+    const tdWater = document.createElement("td"); tdWater.textContent = `Вода: ${counts["Вода"]}`; summaryRow4.appendChild(tdWater);
+    table.appendChild(summaryRow4);
+    const tdWater2 = document.createElement("td"); tdWater2.textContent = 
+    `Вода: ${counts["Вода"]}`; summaryRow4.appendChild(tdWater2);
+
+    tableDiv.appendChild(table);
+    block.appendChild(tableDiv);
+
+    // Круг натальной карты
+    block.appendChild(createSVG(person));
+
+    container.appendChild(block);
+  }
+}
+
+renderResults();
+</script>
+</body>
+</html>

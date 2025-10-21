@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    .dino {
+        border: 1px rgb(200, 200, 200);
+        display: flex;
+        align-items: center;
+        position: relative;
+    }
+    .game{
+        width: 600px;
+        height: 200px;
+        border-bottom: 1px solid black;
+        margin:auto;
+    }
+    #dino{
+        width: 50px;
+        height: 50px;
+        background-image: url(./images.ano/dino.png);
+        background-size:50px 50px;
+        position: relative;
+        top:155px;
+        margin-left: 30px;
+        transform: scaleX(-1);
+    }
+    #factus{
+        width: 40px;
+        height: 40px;
+        background-image: url(./images.ano/facktus.png);
+        background-size:40px 40px;
+        position: relative;
+        top: 115px;
+        animation: factusMov 3.4s infinite ease-in;
+    }
+    /* #factus{
+        left: 560px;
+    } */
+    /* #factus2{
+        left:360px;
+        animation-delay:1.7s;      
+    } */
+    @keyframes factusMov{
+        0%{
+            left:560px
+        }
+        100%{
+            left:-20px
+        }
+    }
+     .jump{
+        animation: jump 0.5s linear forwards;}
+     @keyframes jump{
+        0%{
+            top:155px
+        }
+        25%{
+            top:115px
+        }
+        50%{
+            top:100px
+        }
+        75%{
+            top:115px
+        }
+        100%{
+            top:155px
+        }
+    }
+    #gameOver {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 70px;
+    color: red;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    z-index: 10;
+    display: none;
+}
+
+#restartBtn {
+    margin-top: 40px;
+    padding: 15px 30px;
+    font-size: 24px;
+    cursor: pointer;
+
+}
+
+</style>
+<body>
+    <button class="dino">
+        Start
+    </button>
+    <div class="game">
+        <div id="dino">
+        </div>
+        <div id="factus"></div>
+        <!-- <div id="facktus2"></div> -->
+    <div id="gameOver" class="hidden">GAME OVER!<div id="restartBtn">Перезагрузите страницу</div></div>
+    </div>
+    <script src="./javascript/scriptDino.js"></script>
+</body>
+</html>

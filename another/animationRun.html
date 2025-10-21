@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Running</title>
+</head>
+
+<body>
+    <button id="startBtn">начать бег</button>
+    <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: transparent;
+    }
+    #startBtn{
+        margin-right: 500px;
+    }
+
+    .runningMan {
+    position: absolute; /* Все картинки в одном месте */
+    width: auto;
+    height: 200px;
+    display: none;}
+
+    .show {
+    display: block;}
+
+</style>
+
+
+
+<img src="./images/image(7).png" alt="" class="runningMan show">
+<img src="./images/image(8).png" alt="" class="runningMan">
+<img src="./images/image(9).png" alt="" class="runningMan">
+<img src="./images/image(10).png" alt="" class="runningMan">
+<img src="./images/image(11).png" alt="" class="runningMan">
+<img src="./images/image(12).png" alt="" class="runningMan">
+<img src="./images/image(13).png" alt="" class="runningMan">
+<img src="./images/image(14).png" alt="" class="runningMan">
+<img src="./images/image(15).png" alt="" class="runningMan">
+<img src="./images/image(16).png" alt="" class="runningMan">
+<img src="./images/image(17).png" alt="" class="runningMan">
+<img src="./images/image(18).png" alt="" class="runningMan">
+
+<script>
+    const frames = document.querySelectorAll(".runningMan");
+    let current = 0;
+    let interval;
+
+    function nextFrame(){
+        frames[current].classList.remove("show");
+        current = (current + 1) % frames.length;
+        frames[current].classList.add("show");
+    }
+
+    const startBtn = document.getElementById("startBtn");
+    startBtn.addEventListener("click",function(){
+        if (!interval){
+            interval= setInterval(nextFrame,100);
+        }
+    });
+
+</script>
+</body>
+</html>

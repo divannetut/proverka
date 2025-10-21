@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Аспекты между людьми</title>
+  <style>
+    body {
+      background: white;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    h2 {
+      margin-bottom: 5px;
+      margin-top: 5px;
+    }
+    .selectors {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1px;
+      margin-bottom: 10px;
+    }
+    select {
+      padding: 6px;
+      font-size: 16px;
+      width: 200px;
+    }
+    .label {
+      font-weight: bold;
+      margin-top: 5px;
+      margin-bottom: 5px;
+    }
+    .main-container {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      background-color: rgba(120, 200, 120, 0);
+      gap: 40px;
+      margin-top: 10px;
+      margin-left: 25px;
+
+    }
+    svg {
+      margin-top: 10px;
+      width: 600px;
+      height: 700px;
+      display: block;
+    }
+    .planet-label {
+      font-size: 10px;
+      text-anchor: middle;
+      dominant-baseline: middle;
+    }
+    .zodiac-label {
+      font-size: 12px;
+      text-anchor: middle;
+      dominant-baseline: middle;
+      fill: black;
+    }
+    .legend {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 6px;
+      font-size: 14px;
+      max-width: 220px;
+      text-align: left;
+      margin-top: 130px;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .color-box {
+      width: 20px;
+      height: 20px;
+      border: 1px solid #999;
+      border-radius: 3px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Аспекты между людьми</h2>
+  <div class="selectors">
+    <div class="label">Внешняя карта</div>
+    <select id="outerSelect">
+      <option value="">Выберите человека</option>
+      <option value="Sofia">Sofia</option>
+      <option value="Евгений">Евгений</option>
+      <option value="Тима">Тима</option>
+      <option value="Александра">Александра</option>
+      <option value="СергейШурин">Сергей Шурин</option>
+    </select>
+
+    <div class="label">Внутренняя карта</div>
+    <select id="innerSelect">
+      <option value="">Выберите человека</option>
+      <option value="Sofia">Sofia</option>
+      <option value="Евгений">Евгений</option>
+      <option value="Тима">Тима</option>
+      <option value="Александра">Александра</option>
+      <option value="СергейШурин">Сергей Шурин</option>
+    </select>
+  </div>
+
+  <div class="main-container">
+    <svg viewBox="0 0 600 600">
+      <circle cx="300" cy="190" r="185" fill="none" stroke="#ccc" stroke-width="1" />
+      <circle cx="300" cy="190" r="215" fill="none" stroke="#ccc" stroke-width="1" />
+      <g id="zodiac"></g>
+      <g id="aspects"></g>
+      <g id="planets"></g>
+    </svg>
+
+    <div class="legend" aria-label="Легенда цветов аспектов">
+      <strong>Аспекты:</strong>
+      <div class="legend-item">
+        <div class="color-box" style="background: rgb(255, 223, 100);"></div>
+        <div>Соединение (0)</div>
+      </div>
+      <div class="legend-item">
+        <div class="color-box" style="background: rgba(73, 0, 133, 1);"></div>
+        <div>Оппозиция (180)</div>
+      </div>
+      <div class="legend-item">
+        <div class="color-box" style="background: rgb(253, 111, 132);"></div>
+        <div>Биквинтиль (144)</div>
+      </div>
+      <div class="legend-item">
+        <div class="color-box" style="background: rgba(120, 200, 120, 1);"></div>
+        <div>Тригон (120)</div>
+      </div>
+      <div class="legend-item">
+        <div class="color-box" style="background: rgb(0, 30, 149);"></div>
+        <div>Квадратура (90)</div>
+      </div>
+      <div class="legend-item">
+        <div class="color-box" style="background: rgb(252, 132, 150);"></div>
+        <div>Квинтиль (72)</div>
+      </div>
+      <div class="legend-item">
+        <div class="color-box" style="background: rgb(183, 255, 183);"></div>
+        <div>Секстиль (60)</div>
+      </div>
+      
+    </div>
+  </div>
+
+ <script>
+const SVG_NS = "http://www.w3.org/2000/svg";
+const zodiacNames = ["\u2648","\u2649","\u264A","\u264B","\u264C","\u264D","\u264E","\u264F","\u2650","\u2651","\u2652","\u2653"];
+const specialOnlyConj = ['⚸', '○', '☊', '☋'];
+
+const aspectRanges = [
+  { angle: 0, range: 12, color: 'rgb(255, 223, 100)' },
+  { angle: 180, range: 8, color: 'rgba(73, 0, 133, 1)' },
+  { angle: 144, range: 1, color: 'rgb(253, 111, 132)' },
+  { angle: 120, range: 5, color: 'rgba(120, 200, 120, 0.5)' },
+  { angle: 90, range: 4, color: 'rgb(0, 30, 149)' },
+  { angle: 72, range: 1, color: 'rgb(252, 132, 150)' },
+  { angle: 60, range: 1, color: 'rgb(183, 255, 183)' }
+];
+
+const people = {
+  "Sofia": [
+    ['☉', 5, 24.1939], ['☽', 10, 15.1408], ['☿', 5, 8.795],
+    ['♀', 6, 29.8444], ['♂', 2, 10.6378], ['♃', 7, 15.8164],
+    ['♄', 5, 4.0261], ['♅', 12, 9.3778], ['♆', 11, 15.9778],
+    ['♇', 9, 21.895], ['⚷', 10, 29.1489], ['⚸', 5, 12.3217],
+    ['○', 6, 21.85], ['☊', 1, 14.9083], ['☋', 7, 14.9083]
+  ],
+  "Евгений": [
+    ['☉', 8, 28.4142], ['☽', 10, 6.2897], ['☿', 9, 20.1347],
+    ['♀', 9, 20.3994], ['♂', 12, 8.2339], ['♃', 9, 13.2153],
+    ['♄', 3, 3.4017], ['♅', 7, 16.5847], ['♆', 9, 2.6378],
+    ['♇', 7, 1.5042], ['⚷', 1, 9.7617], ['⚸', 7, 19.3808],
+    ['○', 8, 26.5553], ['☊', 11, 7.5867], ['☋', 5, 7.5867]
+  ],
+  "Тима": [
+    ['☉', 1, 19.2031], ['☽', 8, 0.5742], ['☿', 1, 4.7881],
+    ['♀', 1, 3.9822], ['♂', 9, 23.3958], ['♃', 3, 9.0658],
+    ['♄', 2, 28.6344], ['♅', 11, 23.8203], ['♆', 11, 8.4986],
+    ['♇', 9, 15.1475], ['⚷', 9, 28.9225], ['⚸', 11, 14.8764],
+    ['○', 11, 7.7978], ['☊', 4, 9.8794], ['☋', 10, 9.8794]
+  ],
+  "Александра": [
+    ['☉', 3, 25.6072], ['☽', 5, 12.2225], ['☿', 4, 19.9567],
+    ['♀', 3, 23.5078], ['♂', 6, 17.3225], ['♃', 6, 3.9303],
+    ['♄', 6, 20.7292], ['♅', 8, 22.2644], ['♆', 9, 21.1792],
+    ['♇', 7, 19.0097], ['⚷', 2, 16.2881], ['⚸', 7, 8.0514],
+    ['○', 11, 17.3572], ['☊', 5, 21.5811], ['☋', 11, 21.5811]
+  ],
+  "СергейШурин":[
+  ['☉', 5, 5.97],
+  ['☽', 1, 22.96],
+  ['☿', 4, 20.62],
+  ['♀', 6, 20.08],
+  ['♂', 3, 17.65],
+  ['♃', 8, 5.86],
+  ['♄', 12, 11.37],
+  ['♅', 10, 23.87],
+  ['♆', 10, 21.57],
+  ['♇', 8, 25.28],
+  ['☊', 8, 20],
+  ['☋', 2, 20],
+  ['⚸', 2, 12.57],
+  ['⚷', 6, 9.2881]
+]
+};
+
+
+const toDegrees = (sign, deg) => (sign - 1 ) * 30 + deg;
+const centerX = 300, centerY = 190, r1 = 185, r2 = 215;
+const svgZodiac = document.getElementById("zodiac");
+const svgPlanets = document.getElementById("planets");
+const svgAspects = document.getElementById("aspects");
+
+function getXY(deg, radius) {
+  const rad = (deg - 90) * Math.PI / 180;
+  return { x: centerX + radius * Math.cos(rad), y: centerY + radius * Math.sin(rad) };
+}
+
+function createLine(x1, y1, x2, y2, stroke, strokeWidth = 1, opacity = 1) {
+  const line = document.createElementNS(SVG_NS, 'line');
+  line.setAttribute('x1', x1);
+  line.setAttribute('y1', y1);
+  line.setAttribute('x2', x2);
+  line.setAttribute('y2', y2);
+  line.setAttribute('stroke', stroke);
+  line.setAttribute('stroke-width', strokeWidth);
+  line.setAttribute('opacity', opacity);
+  return line;
+}
+
+function createText(x, y, textContent, className, fill = 'black') {
+  const text = document.createElementNS(SVG_NS, 'text');
+  text.setAttribute('x', x);
+  text.setAttribute('y', y);
+  text.setAttribute('class', className);
+  text.setAttribute('fill', fill);
+  text.setAttribute('text-anchor', 'middle');
+  text.setAttribute('dominant-baseline', 'middle');
+  text.textContent = textContent;
+  return text;
+}
+
+function createCircle(cx, cy, r, fill) {
+  const circle = document.createElementNS(SVG_NS, 'circle');
+  circle.setAttribute('cx', cx);
+  circle.setAttribute('cy', cy);
+  circle.setAttribute('r', r);
+  circle.setAttribute('fill', fill);
+  return circle;
+}
+
+// Рисуем знаки зодиака
+for (let i = 0; i < 12; i++) {
+  const angle = (i * 30 - 90) * Math.PI / 180;
+  const x1 = centerX + 170 * Math.cos(angle);
+  const y1 = centerY + 170 * Math.sin(angle);
+  const x2 = centerX + 230 * Math.cos(angle);
+  const y2 = centerY + 230 * Math.sin(angle);
+  svgZodiac.appendChild(createLine(x1, y1, x2, y2, 'black', 1));
+
+  const labelAngle = ((i * 30 + 15) - 90) * Math.PI / 180;
+  const lx = centerX + 230 * Math.cos(labelAngle);
+  const ly = centerY + 230 * Math.sin(labelAngle);
+  svgZodiac.appendChild(createText(lx, ly, zodiacNames[i], 'zodiac-label'));
+}
+
+function drawPlanets(planets, radius, color) {
+  const placed = [];
+
+  for (const p of planets) {
+    let d = p.deg;
+    let shift = 0;
+    while (placed.some(q => Math.abs(q.deg - d) < 2)) {
+      d += 2;     
+      shift += 1;  
+    }
+    const { x, y } = getXY(d, radius);
+    const label = `${p.name} ${Math.floor(p.deg % 30)}°`;
+    svgPlanets.appendChild(createCircle(x, y, 4, color));
+    const { x: lx, y: ly } = getXY(d, radius - 15 - shift * 12);
+    svgPlanets.appendChild(createText(lx, ly, label, 'planet-label', color));
+
+    p.x = x;
+    p.y = y;
+    placed.push({ deg: d });
+  }
+}
+
+function drawChart(outer, inner) {
+  svgPlanets.innerHTML = '';
+  svgAspects.innerHTML = '';
+  if (!outer || !inner || outer === inner) return;
+
+  const outerPlanets = people[outer].map(([name, sign, deg]) => ({ name, deg: toDegrees(sign, deg) }));
+  const innerPlanets = people[inner].map(([name, sign, deg]) => ({ name, deg: toDegrees(sign, deg) }));
+
+  drawPlanets(outerPlanets, r2, 'blue'); // рисуем внешние планеты
+  drawPlanets(innerPlanets, r1, 'red');  // рисуем внутренние планеты
+
+  for (const a of innerPlanets) {
+    for (const b of outerPlanets) {
+      const onlyConj = specialOnlyConj.includes(a.name) || specialOnlyConj.includes(b.name);
+      const diff = Math.abs(a.deg - b.deg) % 360;
+      const angle = diff > 180 ? 360 - diff : diff;
+      const aspect = aspectRanges.find(ar => Math.abs(ar.angle - angle) <= ar.range);
+      if (aspect && (!onlyConj || angle < 1)) {
+        const { x: bx, y: by } = getXY(b.deg, r1);
+        svgAspects.appendChild(createLine(a.x, a.y, bx, by, aspect.color));
+      }
+    }
+  }
+}
+const outerSelect = document.getElementById("outerSelect");
+const innerSelect = document.getElementById("innerSelect");
+outerSelect.addEventListener("change", () => drawChart(outerSelect.value, innerSelect.value));
+innerSelect.addEventListener("change", () => drawChart(outerSelect.value, innerSelect.value));
+
+drawChart(outerSelect.value, innerSelect.value);
+</script>

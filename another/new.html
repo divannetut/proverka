@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New</title>
+</head>
+<style>
+        button{
+            text-align: center;
+            width: 40px;
+            height: 40px;
+        }
+        body{
+            margin: 150px;
+
+        }
+        #display{
+            margin-bottom: 10px;
+            height:40px;
+            width: 164px;
+        }
+    </style>
+
+
+<body>
+<input type="text" id="display" readonly>
+<div>
+    <button>7</button>
+    <button>8</button>
+    <button>9</button>
+    <button>+</button>
+</div>
+<div>
+    <button>4</button>
+    <button>5</button>
+    <button>6</button>
+    <button>-</button>
+</div>
+<div>
+    <button>1</button>
+    <button>2</button>
+    <button>3</button>
+    <button>x</button>
+</div>
+<div>
+    <button>C</button>
+    <button>0</button>
+    <button>=</button>
+    <button>/</button>
+  </div>
+  <h1>New copy 2</h1>
+    <a href="new copy 2.html">next</a>
+  <script>  
+    const buttons = document.querySelectorAll('button')
+    const display = document.getElementById('display');
+    let firstNumber =null;
+    let operant = null;
+    buttons.forEach(button=>{
+        button.addEventListener('click',()=>{
+            const value = button.textContent;
+            if(value === 'C'){
+                display.value = '';
+                firstNumber = null;
+                operant = null;
+            }
+            else if(value === '='){
+                if(firstNumber !== null && operant !==null){
+                    const secondNumber = parseFloat(display.value);
+                    let result;
+                    switch(operant){
+                        case '+':
+                            result = firstNumber + secondNumber;
+                            break;
+                        case '-':
+                            result = firstNumber - secondNumber;
+                            break;
+                        case 'x':
+                            result = firstNumber * secondNumber;
+                            break;
+                        case '/':
+                            result = firstNumber / secondNumber;
+                            break;}
+                        display.value = result;
+                        firstNumber = null;
+                        operant = null;}
+                                }
+
+
+
+            
+        })
+    })
+
+
+  </script>
+</body>
+</html>
